@@ -5,14 +5,21 @@
 #include <fstream>
 
 using namespace std;
-unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
 
-    ifstream archivo(archiv_);  // Abrir en modo lectura
+unsigned char** GenerarArreglo (char* archiv_, int Tamagno);
+int ValoresArchivo(char* archiv_, int& TAM, unsigned char& clave);
+void DesencriptacionRot(unsigned char& Digito, int rotacion);
+void AplicarDesencriptacion(unsigned char** ArregloEnc, int& Tamagno, int rotacion, unsigned char& clave);
+void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, bool& Listo);
+void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& limitador, int Tamagno);
+
+unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
+    ifstream archivo(archiv_, ios::binary);  // Abrir en modo lectura
     if (!archivo) {
         cerr << "No se pudo abrir el archivo." << endl;
         return NULL;
     }
-    char c;
+    unsigned char c; int valor;
     unsigned char** caracter = new unsigned char*[Tamagno];
 
     for (int l = 0; l < Tamagno; l++){
@@ -20,9 +27,21 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
     }
     for (int i = 0; i < Tamagno; i++){
         for (int j = 0; j < 3; j++){
-            archivo.get(c);
-            caracter[i][j] = c;
+            while ((valor = archivo.get())!= EOF) {
+                //cout << (bool)((valor = archivo.get()) != EOF);
+                c = static_cast<unsigned char>(valor);
+                if (c < 32){
+                    //cout << (int)c;
+                } else {
+                    //cout << c;
+                }
+                caracter[i][j] = c;
+                break;
+            }
         }
+    }
+    if (caracter[Tamagno-1][1] == caracter[Tamagno-1][2]){
+        caracter[Tamagno-1][2] = '\0';
     }
     archivo.close();
     return caracter;
@@ -30,28 +49,29 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
 
 int ValoresArchivo(char* archiv_, int& TAM, unsigned char& clave){
 
-    ifstream archivo(archiv_);  // Abrir en modo lectura
+    ifstream archivo(archiv_, ios::binary);  // Abrir en modo lectura
     if (!archivo) {
         cerr << "No se pudo abrir el archivo." << endl;
         return 1;
     }
 
-    char letra; int cont = 0, c;
-    while (archivo.get(letra)){
+    unsigned char letra; int cont = 0; int c;
+    while ((c = archivo.get()) != EOF){
+        //cout << (bool)((c = archivo.get()) != EOF);
+        letra = static_cast<unsigned char>(c);
+        if (letra < 32){
+            //cout << (int)letra;
+        } else {
+            //cout << letra;
+        }
         if (cont < 2){
             if (cont == 0){
                 clave = letra;
-            } else {
-                if (letra != clave){
-                    if (((letra^clave) >= 16) ^ ((letra&clave) == clave)){
-                        clave = 0;
-                    }
-                }
             }
         }
         cont++;
     }
-    TAM = cont/3;
+    TAM = (cont+1)/3;
     archivo.close();
     return 0;
 }
@@ -66,22 +86,20 @@ void DesencriptacionRot(unsigned char& Digito, int rotacion){
 void AplicarDesencriptacion(unsigned char** ArregloEnc, int& Tamagno, int rotacion, unsigned char& clave){
     for (int i = 0; i < Tamagno; i++){
         for (int j = 0; j < 3; j++){
-            ArregloEnc[i][j] = (ArregloEnc[i][j]^clave);
-            DesencriptacionRot(ArregloEnc[i][j], rotacion);
-            //cout << ArregloEnc[i][j];
+            if (ArregloEnc[i][j] != '\0'){
+                ArregloEnc[i][j] = (ArregloEnc[i][j]^clave);
+                DesencriptacionRot(ArregloEnc[i][j], rotacion);
+                //cout << ArregloEnc[i][j];
+            }
         }
     }
 }
 
-void FounClave(unsigned char digito, unsigned char& clave, const int fila, int& cont, bool& Listo){
+void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, bool& Listo){
     unsigned char letra;
     Listo = false;
     //cout << Listo << digito << endl;
     while (!Listo){
-        if (cont == 8 && fila == 0){
-            clave++;
-            cont = 0;
-        }
         letra = digito ^ clave;
         //cout << (int)letra;
         DesencriptacionRot(letra, cont);
@@ -97,21 +115,26 @@ void FounClave(unsigned char digito, unsigned char& clave, const int fila, int& 
     }
 }
 
-void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char& clave, int& limitador, const int Tamagno){
+void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& limitador, int Tamagno){
     bool Good = false, Listo = false; int  i = 0, j = 2, c = 1;
+    limitador = 0;
     while (!Good){
-        FounClave(ArregloEnc[i][j], clave, i, limitador, Listo);
-        //cout << clave << limitador;
-        if (!Listo){
-            limitador = c;
-            i = 0;
-            c++;
-        } else if (i == (Tamagno-1) && Listo){
-            Good = true;
+        if (ArregloEnc[i][j] != '\0'){
+            FounClave(ArregloEnc[i][j], clave, i, limitador, Listo);
+            //cout << clave << limitador;
+            if (!Listo){
+                limitador = c;
+                i = 0;
+                c++;
+            } else if (i == (Tamagno-1) && Listo){
+                Good = true;
+            } else {
+                i++;
+            }
+            //cout << i << endl;
         } else {
-            i++;
+            Good = true;
         }
-        //cout << i << endl;
     }
 }
 
