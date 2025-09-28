@@ -6,14 +6,13 @@
 
 using namespace std;
 
-unsigned char** GenerarArreglo (char* archiv_, int Tamagno);
-int ValoresArchivo(char* archiv_, int& TAM, unsigned char& clave);
-void DesencriptacionRot(unsigned char& Digito, int rotacion);
+unsigned char** GenerarArreglo (char* archiv_, int Tamagno, unsigned char& clave);
+int ValoresArchivo(char* archiv_, int& TAM);
 void AplicarDesencriptacion(unsigned char** ArregloEnc, int& Tamagno, int rotacion, unsigned char& clave);
 void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, bool& Listo);
 void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& limitador, int Tamagno);
 
-unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
+unsigned char** GenerarArreglo (char* archiv_, int Tamagno, unsigned char& clave){
     ifstream archivo(archiv_, ios::binary);  // Abrir en modo lectura
     if (!archivo) {
         cerr << "No se pudo abrir el archivo." << endl;
@@ -30,10 +29,8 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
             while ((valor = archivo.get())!= EOF) {
                 //cout << (bool)((valor = archivo.get()) != EOF);
                 c = static_cast<unsigned char>(valor);
-                if (c < 32){
-                    //cout << (int)c;
-                } else {
-                    //cout << c;
+                if (i == 0 && j == 0){
+                    clave = c;
                 }
                 caracter[i][j] = c;
                 break;
@@ -47,7 +44,7 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno){
     return caracter;
 }
 
-int ValoresArchivo(char* archiv_, int& TAM, unsigned char& clave){
+int ValoresArchivo(char* archiv_, int& TAM){
 
     ifstream archivo(archiv_, ios::binary);  // Abrir en modo lectura
     if (!archivo) {
@@ -55,20 +52,9 @@ int ValoresArchivo(char* archiv_, int& TAM, unsigned char& clave){
         return 1;
     }
 
-    unsigned char letra; int cont = 0; int c;
+    int cont = 0; int c; unsigned char letra;
     while ((c = archivo.get()) != EOF){
-        //cout << (bool)((c = archivo.get()) != EOF);
         letra = static_cast<unsigned char>(c);
-        if (letra < 32){
-            //cout << (int)letra;
-        } else {
-            //cout << letra;
-        }
-        if (cont < 2){
-            if (cont == 0){
-                clave = letra;
-            }
-        }
         cont++;
     }
     TAM = (cont+1)/3;
@@ -101,13 +87,12 @@ void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, b
     //cout << Listo << digito << endl;
     while (!Listo){
         letra = digito ^ clave;
-        //cout << (int)letra;
         DesencriptacionRot(letra, cont);
         if (!((letra < 65) || ((letra > 90) && (letra < 97)) || (letra > 122))){
             Listo = true;
             //cout << letra << cont;
             break;
-        } else if (fila != 0){
+        } if (fila != 0){
             break;
         } else {
             cont++;
@@ -116,7 +101,7 @@ void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, b
 }
 
 void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& limitador, int Tamagno){
-    bool Good = false, Listo = false; int  i = 0, j = 2, c = 1;
+    bool Good = false, Listo; int  i = 0, j = 2, c = 1;
     limitador = 0;
     while (!Good){
         if (ArregloEnc[i][j] != '\0'){
