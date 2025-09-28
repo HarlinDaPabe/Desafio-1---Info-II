@@ -35,7 +35,6 @@ int main() {
                 FindCompress = contiene_pista(x, len_descomp, pista);
             } else {
                 delete[]x;
-                x = NULL;
                 valor++;
             }
         }
