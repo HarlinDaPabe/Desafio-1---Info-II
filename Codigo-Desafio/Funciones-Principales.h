@@ -1,7 +1,6 @@
 #ifndef FUNCIONES_PRINCIPALES_H
 #define FUNCIONES_PRINCIPALES_H
 
-#include <iostream>
 #include "Funciones.h"
 #include <fstream>
 
@@ -253,7 +252,6 @@ char* decompress_RLEl(unsigned char** comp, int filas, int& output_len, int& inp
 
 bool contiene_pista(char* texto, int& longitud_texto, char* pista){
     int longitud_pista, auxiliar;
-
     ValoresArchivo(pista, auxiliar);
     longitud_pista = auxiliar*3;
     ifstream archivo(pista, ios :: binary);
