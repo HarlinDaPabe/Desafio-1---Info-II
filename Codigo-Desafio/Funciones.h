@@ -24,6 +24,7 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno, unsigned char& clave
     for (int l = 0; l < Tamagno; l++){
         caracter[l] = new unsigned char [3];
     }
+
     for (int i = 0; i < Tamagno; i++){
         for (int j = 0; j < 3; j++){
             while ((valor = archivo.get())!= EOF) {
@@ -37,6 +38,7 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno, unsigned char& clave
             }
         }
     }
+
     if (caracter[Tamagno-1][1] == caracter[Tamagno-1][2]){
         caracter[Tamagno-1][2] = '\0';
     }
@@ -52,9 +54,8 @@ int ValoresArchivo(char* archiv_, int& TAM){
         return 1;
     }
 
-    int cont = 0; int c; unsigned char letra;
+    int cont = 0; int c;
     while ((c = archivo.get()) != EOF){
-        letra = static_cast<unsigned char>(c);
         cont++;
     }
     TAM = (cont+1)/3;
@@ -75,7 +76,6 @@ void AplicarDesencriptacion(unsigned char** ArregloEnc, int& Tamagno, int rotaci
             if (ArregloEnc[i][j] != '\0'){
                 ArregloEnc[i][j] = (ArregloEnc[i][j]^clave);
                 DesencriptacionRot(ArregloEnc[i][j], rotacion);
-                //cout << ArregloEnc[i][j];
             }
         }
     }
@@ -84,13 +84,11 @@ void AplicarDesencriptacion(unsigned char** ArregloEnc, int& Tamagno, int rotaci
 void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, bool& Listo){
     unsigned char letra;
     Listo = false;
-    //cout << Listo << digito << endl;
     while (!Listo){
         letra = digito ^ clave;
         DesencriptacionRot(letra, cont);
         if (!((letra < 65) || ((letra > 90) && (letra < 97)) || (letra > 122))){
             Listo = true;
-            //cout << letra << cont;
             break;
         } if (fila != 0){
             break;
@@ -106,7 +104,6 @@ void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& l
     while (!Good){
         if (ArregloEnc[i][j] != '\0'){
             FounClave(ArregloEnc[i][j], clave, i, limitador, Listo);
-            //cout << clave << limitador;
             if (!Listo){
                 limitador = c;
                 i = 0;
@@ -116,7 +113,6 @@ void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& l
             } else {
                 i++;
             }
-            //cout << i << endl;
         } else {
             Good = true;
         }

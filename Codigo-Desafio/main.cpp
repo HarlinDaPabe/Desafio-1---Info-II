@@ -28,7 +28,6 @@ int main() {
         while (!FindCompress && valor < 2){
             if (valor == 0){
                 x = decompress_RLEl(Encriptado, Tamagno, len_descomp, bytes);
-
             } else {
                 x = decompress_LZ78_bidimensional(Encriptado, Tamagno, len_descomp, bytes);
             }
@@ -36,15 +35,24 @@ int main() {
                 FindCompress = contiene_pista(x, len_descomp, pista);
             } else {
                 delete[]x;
+                x = NULL;
                 valor++;
             }
         }
+
+        for (int filas = 0; filas < Tamagno; filas++){
+            delete[] Encriptado[filas];
+        }
+        delete[] Encriptado;
+        Encriptado = NULL;
 
         if (valor != 2){
             cout << "Texto Original Descomprimido y Descencriptado:\n";
             for (int i = 0; i < len_descomp; i++){
                 cout << x[i];
             }
+            delete[]x;
+            x = NULL;
             cout << endl;
         } else {
             cout << "~El texto no se pudo Descomprimir con los Metodos Brindados~\n";
@@ -53,12 +61,6 @@ int main() {
         cout << "\nEstimado Usuario, El texto (" << archivo << ") fue codigicado con clave: " << clave << " --> 0x"<< hex << uppercase << setw(2) << setfill('0') << (int)clave << "\n";
         cout << "Se Implemento una rotacion de (" << rotaciones << ") Bits" << endl;
         cout << "Metodo Descopresion: " << Compresion[valor] << endl;
-
-        for (int filas = 0; filas < Tamagno; filas++){
-            delete[] Encriptado[filas];
-        }
-        delete[] Encriptado;
-        delete[]x;
         l++;
     }
     return 0;
