@@ -51,7 +51,6 @@ int main() {
                 cout << x[i];
             }
             delete[]x;
-            x = NULL;
             cout << endl;
         } else {
             cout << "~El texto no se pudo Descomprimir con los Metodos Brindados~\n";
