@@ -28,7 +28,6 @@ unsigned char** GenerarArreglo (char* archiv_, int Tamagno, unsigned char& clave
     for (int i = 0; i < Tamagno; i++){
         for (int j = 0; j < 3; j++){
             while ((valor = archivo.get())!= EOF) {
-                //cout << (bool)((valor = archivo.get()) != EOF);
                 c = static_cast<unsigned char>(valor);
                 if (i == 0 && j == 0){
                     clave = c;
@@ -85,6 +84,9 @@ void FounClave(unsigned char digito, unsigned char clave, int fila, int& cont, b
     unsigned char letra;
     Listo = false;
     while (!Listo){
+        if (cont == 8){
+            break;
+        }
         letra = digito ^ clave;
         DesencriptacionRot(letra, cont);
         if (!((letra < 65) || ((letra > 90) && (letra < 97)) || (letra > 122))){
@@ -112,6 +114,9 @@ void VerificarFoundClave(unsigned char** ArregloEnc, unsigned char clave, int& l
                 Good = true;
             } else {
                 i++;
+            }
+            if (limitador == 8){
+                Good = true;
             }
         } else {
             Good = true;

@@ -25,7 +25,7 @@ int main() {
         char Compresion[3][8] = {"RLE", "LZ78", "Nothing"}; char* x; int valor = 0, len_descomp, bytes; bool FindCompress = false;
         char pista[11] = {'p', 'i', 's', 't', 'a', l, '.', 't', 'x', 't'};
 
-        while (!FindCompress && valor < 2){
+        while (!FindCompress && (valor < 2 && rotaciones != 8)){
             if (valor == 0){
                 x = decompress_RLEl(Encriptado, Tamagno, len_descomp, bytes);
             } else {
@@ -45,15 +45,17 @@ int main() {
         delete[] Encriptado;
         Encriptado = NULL;
 
-        if (valor != 2){
+        if (valor != 2 && rotaciones != 8){
             cout << "Texto Original Descomprimido y Descencriptado:\n";
             for (int i = 0; i < len_descomp; i++){
                 cout << x[i];
             }
             delete[]x;
+            x = NULL;
             cout << endl;
         } else {
             cout << "~El texto no se pudo Descomprimir con los Metodos Brindados~\n";
+            break;
         }
 
         cout << "\nEstimado Usuario, El texto (" << archivo << ") fue codigicado con clave: " << clave << " --> 0x"<< hex << uppercase << setw(2) << setfill('0') << (int)clave << "\n";
